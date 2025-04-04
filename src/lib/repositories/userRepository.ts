@@ -1,6 +1,6 @@
 // lib/repositories/userRepository.ts
 import { db } from '../db';
-import { users, orders, incidents } from '../schema';
+import { users, orders, incidents, invoices } from '../schema';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,6 +19,13 @@ export interface UserWithDetails {
     date: string;
     description: string;
     status: string;
+  }[];
+  invoices: {
+    id: number;
+    periodStartDate: string;
+    periodEndDate: string;
+    price: string;
+    adjustment: string | null;
   }[];
 }
 
@@ -59,6 +66,15 @@ export class UserRepository {
       status: incidents.status,
     }).from(incidents).where(eq(incidents.userId, user.id));
     
+    // Get the user's invoices
+    const userInvoices = await db.select({
+      id: invoices.id,
+      periodStartDate: invoices.periodStartDate,
+      periodEndDate: invoices.periodEndDate,
+      price: invoices.price,
+      adjustment: invoices.adjustment,
+    }).from(invoices).where(eq(invoices.userId, user.id));
+    
     // Format dates for frontend display
     const formattedOrders = userOrders.map(order => ({
       ...order,
@@ -70,6 +86,12 @@ export class UserRepository {
       date: new Date(incident.date).toISOString().split('T')[0]
     }));
     
+    const formattedInvoices = userInvoices.map(invoice => ({
+      ...invoice,
+      periodStartDate: new Date(invoice.periodStartDate).toISOString().split('T')[0],
+      periodEndDate: new Date(invoice.periodEndDate).toISOString().split('T')[0]
+    }));
+    
     // Return the user with their orders and incidents
     return {
       id: user.externalId,
@@ -77,15 +99,17 @@ export class UserRepository {
       phoneNumber: user.phoneNumber,
       orders: formattedOrders,
       incidents: formattedIncidents,
+      invoices: formattedInvoices,
     };
   }
 
   // Create a new user
-  async createUser(name: string, phoneNumber: string) {
+  async createUser(name: string, email: string, phoneNumber: string) {
     const externalId = uuidv4();
     await db.insert(users).values({
       externalId,
       name,
+      email, // Added email field
       phoneNumber,
     });
     return externalId;

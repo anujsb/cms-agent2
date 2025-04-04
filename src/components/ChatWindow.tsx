@@ -1,6 +1,4 @@
-// app/components/ChatWindow.tsx
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +13,10 @@ import {
   Smile, 
   Info,
   MessageSquare,
-  Clock
+  Clock,
+  AlertCircle
 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   text: string;
@@ -68,6 +68,12 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
       inputRef.current.focus();
     }
   }, [userId]);
+
+  // Process message text to identify and format special patterns
+  const processMessageText = (text: string) => {
+    // Check if text contains invoice-like patterns and apply formatting if needed
+    return text;
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -143,6 +149,16 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
     }
   };
 
+  // Function to check if text contains a numbered list or bullet points
+  const hasListContent = (text: string) => {
+    return /(?:^|\n)(\d+\.|\•|\*)\s/.test(text);
+  };
+
+  // Function to check if text contains invoice-like content
+  const hasInvoiceContent = (text: string) => {
+    return /(?:€|EUR|invoice|bill|plan fee|adjustment|amount)/i.test(text);
+  };
+
   return (
     <Card className="flex flex-col h-[600px] shadow-lg rounded-xl border-gray-200 overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 px-4">
@@ -187,7 +203,7 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
                     msg.isBot 
                       ? 'bg-white border-l-4 border-l-blue-400 text-gray-800' 
                       : 'bg-blue-600 text-white'
-                  }`}
+                  } ${hasInvoiceContent(msg.text) && msg.isBot ? 'invoice-content' : ''}`}
                 >
                   <div className="flex items-center mb-1">
                     {msg.isBot ? (
@@ -201,7 +217,34 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
                     )}
                   </div>
                   
-                  <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                  {msg.isBot ? (
+                    <div className="whitespace-pre-wrap break-words markdown-content">
+                      <ReactMarkdown 
+                        components={{
+                          p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                          ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                          ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                          li: ({node, ...props}) => <li className="py-0.5" {...props} />,
+                          h3: ({node, ...props}) => <h3 className="font-bold text-blue-600 mt-3 mb-2" {...props} />,
+                          h4: ({node, ...props}) => <h4 className="font-semibold mt-2 mb-1" {...props} />
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+
+                      {/* Special formatting for invoice-like content */}
+                      {hasInvoiceContent(msg.text) && (
+                        <div className="mt-2 p-3 bg-blue-50 rounded-md border border-blue-100">
+                          <div className="flex items-center text-blue-700 mb-2">
+                            <Info size={14} className="mr-1" />
+                            <span className="text-xs font-medium">Invoice Details</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                  )}
                   
                   <div className={`flex items-center text-xs mt-2 ${msg.isBot ? 'text-gray-400' : 'text-blue-100'}`}>
                     <Clock size={12} className="mr-1" />
@@ -209,15 +252,43 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
                   </div>
                   
                   {msg.isBot && msg.text.includes("Would you like to call now?") && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-3 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
-                      onClick={handleCallSupport}
-                    >
-                      <Phone size={14} className="mr-2" />
-                      Call Now
-                    </Button>
+                    <div className="mt-3 flex">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+                        onClick={handleCallSupport}
+                      >
+                        <Phone size={14} className="mr-2" />
+                        Call Now
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Add help button for invoice-related messages */}
+                  {msg.isBot && hasInvoiceContent(msg.text) && !msg.text.includes("Would you like to call now?") && (
+                    <div className="mt-3 flex">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 mr-2"
+                        onClick={() => {
+                          setInput("I don't understand my invoice. Can you explain it in simpler terms?");
+                        }}
+                      >
+                        <AlertCircle size={14} className="mr-2" />
+                        Need Help Understanding?
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+                        onClick={handleCallSupport}
+                      >
+                        <Phone size={14} className="mr-2" />
+                        Call Support
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>

@@ -11,10 +11,10 @@ async function seed() {
     console.log('Migrations completed');
     
     // Create test users
-    const johnId = await userRepo.createUser('John Doe', '0612345678');
+    const johnId = await userRepo.createUser('John Doe', '0612345678', 'john.doe@example.com'); // Added third argument
     console.log(`Created user John Doe with ID: ${johnId}`);
     
-    const janeId = await userRepo.createUser('Jane Smith', '0698765432');
+    const janeId = await userRepo.createUser('Jane Smith', '0698765432', 'jane.smith@example.com'); // Added third argument
     console.log(`Created user Jane Smith with ID: ${janeId}`);
     
     // Add orders for John
