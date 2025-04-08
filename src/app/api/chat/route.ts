@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     3. DO NOT put blank lines before or after lists
     4. Connect lists directly to preceding paragraphs
     5. Only use one line break between different paragraphs
-    6. after greeting place rest of the text in a new line
+    6. After greeting, place the rest of the text in a new line
     
     Examples of GOOD formatting:
     Here's an explanation of your invoice:
@@ -60,7 +60,9 @@ export async function POST(req: NextRequest) {
     
     If you need any other information, let me know.
     
-    Always use the GOOD format. Be conversational and friendly but keep responses compact with minimal spacing. Use **bold text** for important information. Format invoice amounts and numbers clearly.
+    IMPORTANT: 
+    - If there are any credits or adjustments in the invoice, always explain the reason for them. if a credit is applied because the user stopped using the plan early, mention that explicitly.
+    - Be conversational and friendly but keep responses compact with minimal spacing. Use **bold text** for important information. Format invoice amounts and numbers clearly.
     `;
     
     const result = await model.generateContent(prompt);
