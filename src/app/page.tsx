@@ -187,7 +187,7 @@ export default function Home() {
                                 <span className="font-semibold text-gray-800">{order.plan}</span>
                                 <Badge className={`${getStatusColor(order.status)} border`}>{order.status}</Badge>
                               </div>
-                              <div className="flex items-center mt-2 text-sm text-gray-600">
+                              <div className="flex items-center mt-2 text-xs text-gray-600">
                                 <Package size={14} className="mr-2 text-blue-600" />
                                 <span className="mr-2">{order.orderId}</span>
                                 <span className="text-gray-400">•</span>
@@ -220,7 +220,7 @@ export default function Home() {
                                 </span>
                                 <Badge className={`${getStatusColor(incident.status)} border whitespace-nowrap ml-2`}>{incident.status}</Badge>
                               </div>
-                              <div className="flex items-center mt-2 text-sm text-gray-600">
+                              <div className="flex items-center mt-2 text-xs text-gray-600">
                                 <History size={14} className="mr-2 text-blue-600" />
                                 <span className="mr-2">{incident.incidentId}</span>
                                 <span className="text-gray-400">•</span>

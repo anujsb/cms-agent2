@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     3. DO NOT put blank lines before or after lists
     4. Connect lists directly to preceding paragraphs
     5. Only use one line break between different paragraphs
-    6. after geeting put rest of the text in a new line
+    6. after greeting place rest of the text in a new line
     
     Examples of GOOD formatting:
     Here's an explanation of your invoice:

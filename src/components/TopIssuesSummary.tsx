@@ -1,5 +1,5 @@
 // src/components/TopIssuesSummary.tsx
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,7 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
   const [loading, setLoading] = useState(true);
   const [issuesSummary, setIssuesSummary] = useState<IssueSummary[]>([]);
   const [filterBy, setFilterBy] = useState<string>("all");
-  
+
   useEffect(() => {
     if (!userId) return;
 
@@ -40,36 +40,36 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
         // Fetch the raw user data first
         const userResponse = await fetch(`/api/users/${userId}`);
         if (!userResponse.ok) {
-          throw new Error('Failed to fetch user data');
+          throw new Error("Failed to fetch user data");
         }
         const userData = await userResponse.json();
-        
+
         // Call Gemini API to analyze and categorize the issues
-        const analyzeResponse = await fetch('/api/analyze-issues', {
-          method: 'POST',
+        const analyzeResponse = await fetch("/api/analyze-issues", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             userId,
-            incidents: userData.incidents
+            incidents: userData.incidents,
           }),
         });
-        
+
         if (!analyzeResponse.ok) {
-          throw new Error('Failed to analyze issues');
+          throw new Error("Failed to analyze issues");
         }
-        
+
         const { categorizedIssues } = await analyzeResponse.json();
         setIssuesSummary(categorizedIssues);
       } catch (error) {
-        console.error('Error in issue analysis:', error);
+        console.error("Error in issue analysis:", error);
         setIssuesSummary([]);
       } finally {
         setLoading(false);
       }
     }
-    
+
     fetchIssueSummary();
   }, [userId]);
 
@@ -129,11 +129,16 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
     }
   };
 
-  const filteredIssues = filterBy === "all" 
-    ? issuesSummary 
-    : issuesSummary.filter(issue => issue.status.toLowerCase() === filterBy);
+  const filteredIssues =
+    filterBy === "all"
+      ? issuesSummary
+      : issuesSummary.filter(
+          (issue) => issue.status.toLowerCase() === filterBy
+        );
 
-  const uniqueStatuses = Array.from(new Set(issuesSummary.map(issue => issue.status.toLowerCase())));
+  const uniqueStatuses = Array.from(
+    new Set(issuesSummary.map((issue) => issue.status.toLowerCase()))
+  );
 
   if (loading) {
     return (
@@ -168,7 +173,9 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
           <div className="flex flex-col items-center justify-center text-gray-500">
             <AlertCircle className="mb-3" size={24} />
             <p className="font-medium">No issues found</p>
-            <p className="text-sm text-gray-400 mt-1">Customer has no reported issues</p>
+            <p className="text-sm text-gray-400 mt-1">
+              Customer has no reported issues
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -182,7 +189,7 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
           <TrendingUp size={16} className="text-gray-500" />
           TOP ISSUES SUMMARY
         </CardTitle>
-        
+
         {issuesSummary.length > 0 && (
           <div className="flex items-center">
             <Filter size={12} className="mr-2 text-gray-400" />
@@ -192,8 +199,12 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
-                {uniqueStatuses.map(status => (
-                  <SelectItem key={status} value={status} className="capitalize">
+                {uniqueStatuses.map((status) => (
+                  <SelectItem
+                    key={status}
+                    value={status}
+                    className="capitalize"
+                  >
                     {status}
                   </SelectItem>
                 ))}
@@ -206,10 +217,12 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
         <div className="space-y-3">
           {filteredIssues.length === 0 ? (
             <div className="text-center py-6">
-              <p className="text-sm text-gray-500">No issues match the selected filter</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <p className="text-sm text-gray-500">
+                No issues match the selected filter
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
                 className="mt-2"
                 onClick={() => setFilterBy("all")}
               >
@@ -218,25 +231,40 @@ export default function TopIssuesSummary({ userId }: TopIssuesSummaryProps) {
             </div>
           ) : (
             filteredIssues.map((issue) => (
-              <div 
-                key={issue.id} 
+              <div
+                key={issue.id}
                 className="flex flex-col p-3 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-150"
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="mr-1">{getCategoryIcon(issue.category)}</span>
-                    <Badge className={`${getCategoryColor(issue.category)} px-2 py-0.5 rounded-md font-medium`}>
+                    <span className="mr-1">
+                      {getCategoryIcon(issue.category)}
+                    </span>
+                    <Badge
+                      className={`${getCategoryColor(
+                        issue.category
+                      )} px-2 py-0.5 rounded-md font-medium`}
+                    >
                       {issue.category}
                     </Badge>
-                    <span className="text-xs text-gray-500 font-medium px-2 py-0.5 bg-gray-100 rounded-md">
-                      {issue.count} {issue.count === 1 ? 'issue' : 'issues'}
-                    </span>
                   </div>
-                  <Badge className={`${getStatusColor(issue.status)} px-2 py-0.5 font-normal`}>
-                    {issue.status}
-                  </Badge>
+                  <div className="flex flex-col  items-end justify-between gap-2">
+                    <span className="text-xs text-gray-500 font-medium px-2 py-0.5 bg-gray-100 rounded-md">
+                      {issue.count} {issue.count === 1 ? "issue" : "issues"}
+                    </span>
+                    <Badge
+                      className={`${getStatusColor(
+                        issue.status
+                      )} px-2 py-0.5 font-normal`}
+                    >
+                      {issue.status}
+                    </Badge>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700 line-clamp-2" title={issue.description}>
+                <p
+                  className="text-sm text-gray-700 line-clamp-2"
+                  title={issue.description}
+                >
                   {issue.description}
                 </p>
               </div>
