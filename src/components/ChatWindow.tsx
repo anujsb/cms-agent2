@@ -165,7 +165,7 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg flex items-center">
             <MessageSquare size={18} className="mr-2" />
-            Customer Support Chat
+            Customer Support Assistant.
           </CardTitle>
           <div className="flex space-x-2">
             <Button 
@@ -219,14 +219,14 @@ export default function ChatWindow({ userId }: ChatWindowProps) {
                   
                   {msg.isBot ? (
                     <div className="whitespace-pre-wrap break-words markdown-content">
-                      <ReactMarkdown 
+                      <ReactMarkdown
                         components={{
-                          p: ({node, ...props}) => <p className="mb-2" {...props} />,
-                          ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                          ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
-                          li: ({node, ...props}) => <li className="py-0.5" {...props} />,
-                          h3: ({node, ...props}) => <h3 className="font-bold text-blue-600 mt-3 mb-2" {...props} />,
-                          h4: ({node, ...props}) => <h4 className="font-semibold mt-2 mb-1" {...props} />
+                          p: ({ node, ...props }) => <p className="text-sm" {...props} />, // Reduce margin-bottom and font size
+                          ul: ({ node, ...props }) => <ul className="list-disc pl-5 text-sm" {...props} />,
+                          ol: ({ node, ...props }) => <ol className="list-decimal pl-5 text-sm" {...props} />,
+                          li: ({ node, ...props }) => <li className="text-sm" {...props} />,
+                          h3: ({ node, ...props }) => <h3 className="font-bold text-blue-600 text-sm" {...props} />,
+                          h4: ({ node, ...props }) => <h4 className="font-semibold text-sm" {...props} />,
                         }}
                       >
                         {msg.text}

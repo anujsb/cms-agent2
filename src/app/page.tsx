@@ -26,7 +26,8 @@ interface User {
   phoneNumber: string;
   orders: {
     orderId: string;
-    date: string;
+    inServiceDate: string;
+    outServiceDate: string | null;
     plan: string;
     status: string;
   }[];
@@ -88,21 +89,21 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-blue-50 p-2 md:p-2">
-      <div className="w-full max-w-8xl mx-auto">
-        {/* <header className="mb-6">
+    <main className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
+      <div className="w-full max-w-6xl mx-auto">
+        <header className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Customer Care Portal</h1>
           <p className="text-gray-500">Manage customer interactions and support tickets efficiently</p>
-        </header> */}
+        </header>
         
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row gap-2">
           {/* Sidebar */}
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/3 border-r border-gray-300 pr-4">
             <Card className="shadow-lg border-gray-200 rounded-xl mb-6 overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4">
                 <CardTitle className="flex items-center">
                   <UserCircle2 className="mr-2" size={20} />
-                  <span>Customer Profile</span>
+                  <span>Customer Care Agent.</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
@@ -148,7 +149,12 @@ export default function Home() {
                             </div>
                             <div className="flex items-center mt-2 text-sm text-gray-600">
                               <Calendar size={14} className="mr-1 text-blue-600" />
-                              <span>Since {user.orders.find(o => o.status === "Active")?.date}</span>
+                              <span>
+                                From {user.orders.find(o => o.status === "Active")?.inServiceDate} 
+                                {user.orders.find(o => o.status === "Active")?.outServiceDate 
+                                  ? ` to ${user.orders.find(o => o.status === "Active")?.outServiceDate}` 
+                                  : ""}
+                              </span>
                             </div>
                           </div>
                         ) : (
@@ -186,7 +192,10 @@ export default function Home() {
                                 <span className="mr-2">{order.orderId}</span>
                                 <span className="text-gray-400">•</span>
                                 <Calendar size={14} className="mx-2 text-blue-600" />
-                                <span>{order.date}</span>
+                                <span>
+                                  From {order.inServiceDate} 
+                                  {order.outServiceDate ? ` to ${order.outServiceDate}` : ""}
+                                </span>
                               </div>
                             </div>
                           ))
@@ -243,7 +252,7 @@ export default function Home() {
           </div>
 
           {/* Chat Window */}
-          <div className="w-full md:w-2/3">
+          <div className="w-full md:w-2/3 pl-2">
             {selectedUser ? (
               <ChatWindow userId={selectedUser} />
             ) : (

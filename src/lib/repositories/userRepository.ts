@@ -10,7 +10,8 @@ export interface UserWithDetails {
   phoneNumber: string;
   orders: {
     orderId: string;
-    date: string;
+    inServiceDate: string;
+    outServiceDate: string | null; // Nullable if not set
     plan: string;
     status: string;
   }[];
@@ -53,7 +54,8 @@ export class UserRepository {
     // Get the user's orders
     const userOrders = await db.select({
       orderId: orders.orderId,
-      date: orders.date,
+      inServiceDate: orders.inServiceDate,
+      outServiceDate: orders.outServiceDate,
       plan: orders.plan,
       status: orders.status,
     }).from(orders).where(eq(orders.userId, user.id));
@@ -78,7 +80,8 @@ export class UserRepository {
     // Format dates for frontend display
     const formattedOrders = userOrders.map(order => ({
       ...order,
-      date: new Date(order.date).toISOString().split('T')[0]
+      inServiceDate: order.inServiceDate ? new Date(order.inServiceDate).toISOString().split('T')[0] : '',
+      outServiceDate: order.outServiceDate ? new Date(order.outServiceDate).toISOString().split('T')[0] : null,
     }));
     
     const formattedIncidents = userIncidents.map(incident => ({
@@ -116,7 +119,7 @@ export class UserRepository {
   }
 
   // Add an order for a user
-  async addOrder(userId: string, plan: string, status: 'Active' | 'Expired' | 'Pending') {
+  async addOrder(userId: string, plan: string, status: 'Active' | 'Expired' | 'Pending', inServiceDate: Date, outServiceDate?: Date) {
     // Get the internal user ID
     const userResults = await db.select().from(users).where(eq(users.externalId, userId));
     
@@ -129,7 +132,9 @@ export class UserRepository {
     await db.insert(orders).values({
       orderId,
       userId: userResults[0].id,
-      date: new Date(),
+      date: new Date(), // Add the required 'date' field
+      inServiceDate,
+      outServiceDate: outServiceDate || null,
       plan,
       status,
     });
