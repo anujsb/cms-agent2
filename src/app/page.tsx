@@ -193,7 +193,8 @@ export default function Home() {
                                 <span className="text-gray-400">•</span>
                                 <Calendar size={14} className="mx-2 text-blue-600" />
                                 <span>
-                                  From {order.inServiceDate} 
+                                  {/* From */}
+                                   {order.inServiceDate} 
                                   {order.outServiceDate ? ` to ${order.outServiceDate}` : ""}
                                 </span>
                               </div>
