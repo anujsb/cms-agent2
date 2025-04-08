@@ -30,38 +30,49 @@ export async function POST(req: NextRequest) {
     
     User query: "${message}"
     
-    Guidelines:
-    1. Use compact formatting with minimal blank lines between points.
-    2. strictly dont put line breaks or blank lines before, between, or after bullet points.
-    3. Use concise sentences and bullet points for clarity.
-    4. If the user asks about invoices or billing:
-       - Explain the invoice structure if needed.
-       - Break down the invoice into simple parts like "Monthly Plan Fee", "Adjustments", and "Final Amount".
-       - Use a compact format: Monthly Plan Fee: €XX.XX, Adjustment: -€XX.XX, Final Amount: €XX.XX.
-       - For multiple invoices, list them clearly.
-    5. If the user is confused about their bill:
-       - Provide a step-by-step explanation.
-       - Acknowledge their confusion and simplify the explanation.
-       - Ask if they need further clarification.
-    6. For network issues or technical problems:
-       - Ask diagnostic questions.
-       - Provide simple troubleshooting steps.
-       - Suggest contacting support for complex issues.
-    7. For unresolved or complex issues:
-       - Acknowledge the complexity.
-       - Offer to create a support ticket or suggest calling customer service.
-    8. When discussing plans or services:
-       - Use bullet points for clarity.
-       - Clearly label multiple plans if applicable.
+    FORMATTING RULES (VERY IMPORTANT):
+    1. Use compact markdown formatting with minimal spacing
+    2. Use markdown for formatting:
+       - For bold text: **bold text**
+       - For bullet points: Use dashes with single space (- Item)
+       - For numbered lists: Use numbers (1. Item)
+    3. DO NOT put blank lines before or after lists
+    4. Connect lists directly to preceding paragraphs
+    5. Only use one line break between different paragraphs
     
-    Be conversational and friendly. Format numerical data clearly. Acknowledge user frustration before addressing technical aspects.
+    Examples of GOOD formatting:
+    Here's an explanation of your invoice:
+    - Monthly fee: €25.00
+    - Extra data: €5.00
+    - **Total amount**: €30.00
+    
+    If you need any other information, let me know.
+    
+    Examples of BAD formatting:
+    Here's an explanation of your invoice:
+    
+    - Monthly fee: €25.00
+    
+    - Extra data: €5.00
+    
+    - Total amount: €30.00
+    
+    If you need any other information, let me know.
+    
+    Always use the GOOD format. Be conversational and friendly but keep responses compact with minimal spacing. Use **bold text** for important information. Format invoice amounts and numbers clearly.
     `;
     
     const result = await model.generateContent(prompt);
     const response = await result.response.text();
-    const trimmedResponse = response.trim(); // Trim white spaces
+    
+    // Process response to fix any spacing issues while preserving Markdown
+    const cleanedResponse = response
+      .replace(/\n\s*\n/g, "\n") // Replace multiple line breaks with single one
+      .replace(/\n\s*- /g, "\n- ") // Clean spaces before list items
+      .replace(/\n\s*\d+\. /g, "\n1. ") // Clean spaces before numbered list items
+      .trim();
 
-    return NextResponse.json({ reply: trimmedResponse });
+    return NextResponse.json({ reply: cleanedResponse });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
