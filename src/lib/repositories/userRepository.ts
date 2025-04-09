@@ -10,6 +10,7 @@ export interface UserWithDetails {
   phoneNumber: string;
   orders: {
     orderId: string;
+    productName: string;
     inServiceDate: string;
     outServiceDate: string | null; // Nullable if not set
     plan: string;
@@ -54,6 +55,7 @@ export class UserRepository {
     // Get the user's orders
     const userOrders = await db.select({
       orderId: orders.orderId,
+      productName: orders.productName,
       inServiceDate: orders.inServiceDate,
       outServiceDate: orders.outServiceDate,
       plan: orders.plan,
@@ -119,7 +121,7 @@ export class UserRepository {
   }
 
   // Add an order for a user
-  async addOrder(userId: string, plan: string, status: 'Active' | 'Expired' | 'Pending', inServiceDate: Date, outServiceDate?: Date) {
+  async addOrder(userId: string, productName:string, plan: string, status: 'Active' | 'Expired' | 'Pending', inServiceDate: Date, outServiceDate?: Date) {
     // Get the internal user ID
     const userResults = await db.select().from(users).where(eq(users.externalId, userId));
     
@@ -132,6 +134,7 @@ export class UserRepository {
     await db.insert(orders).values({
       orderId,
       userId: userResults[0].id,
+      productName,
       date: new Date(), // Add the required 'date' field
       inServiceDate,
       outServiceDate: outServiceDate || null,

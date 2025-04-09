@@ -21,7 +21,7 @@ export const orders = pgTable('orders', {
   orderId: varchar('order_id', { length: 36 }).notNull().unique(),
   userId: serial('user_id').references(() => users.id).notNull(),
   productId: serial('product_id').references(() => products.id), // Added reference to products
-  productName: varchar('product_name', { length: 255 }), // Added product name
+  productName: varchar('product_name', { length: 255 }).notNull(), // Added product name
   date: timestamp('date').notNull(),
   inServiceDate: timestamp('in_service_date'), // Added in-service date
   outServiceDate: timestamp('out_service_date'), // Added out-service date

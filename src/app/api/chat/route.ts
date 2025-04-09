@@ -30,16 +30,17 @@ export async function POST(req: NextRequest) {
     
     User query: "${message}"
     
-    FORMATTING RULES (VERY IMPORTANT):
+  FORMATTING RULES (VERY IMPORTANT):
     1. Use compact markdown formatting with minimal spacing
     2. Use markdown for formatting:
-       - For bold text: **bold text**
-       - For bullet points: Use dashes with single space (- Item)
-       - For numbered lists: Use numbers (1. Item)
+      - For bold text: **bold text**
+      - For bullet points: Use dashes with single space (- Item)
+      - For numbered lists: Use numbers (1. Item)
     3. DO NOT put blank lines before or after lists
     4. Connect lists directly to preceding paragraphs
     5. Only use one line break between different paragraphs
     6. After greeting, place the rest of the text in a new line
+
     
     Examples of GOOD formatting:
     Here's an explanation of your invoice:
@@ -61,13 +62,13 @@ export async function POST(req: NextRequest) {
     If you need any other information, let me know.
     
     IMPORTANT: 
-    - If there are any credits or adjustments in the invoice, always explain the reason for them. if a credit is applied because the user stopped using the plan early, mention that explicitly.
+    - If there are any credits or adjustments in the invoice, always explain the reason for them. If a credit is applied because the user stopped using the plan early, mention that explicitly.
     - Be conversational and friendly but keep responses compact with minimal spacing. Use **bold text** for important information. Format invoice amounts and numbers clearly.
     `;
-    
+
     const result = await model.generateContent(prompt);
     const response = await result.response.text();
-    
+
     // Process response to fix any spacing issues while preserving Markdown
     const cleanedResponse = response
       .replace(/\n\s*\n/g, "\n") // Replace multiple line breaks with single one

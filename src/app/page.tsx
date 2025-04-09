@@ -26,6 +26,7 @@ interface User {
   phoneNumber: string;
   orders: {
     orderId: string;
+    productName: string;
     inServiceDate: string;
     outServiceDate: string | null;
     plan: string;
@@ -143,7 +144,7 @@ export default function Home() {
                           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                             <div className="flex justify-between items-center">
                               <span className="font-medium text-gray-800">
-                                {user.orders.find(o => o.status === "Active")?.plan}
+                                {user.orders.find(o => o.status === "Active")?.productName}
                               </span>
                               <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-200">Active</Badge>
                             </div>
@@ -184,7 +185,7 @@ export default function Home() {
                           user.orders.map(order => (
                             <div key={order.orderId} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
                               <div className="flex justify-between items-center">
-                                <span className="font-semibold text-gray-800">{order.plan}</span>
+                                <span className="font-semibold text-gray-800">{order.productName}</span>
                                 <Badge className={`${getStatusColor(order.status)} border`}>{order.status}</Badge>
                               </div>
                               <div className="flex items-center mt-2 text-xs text-gray-600">
